@@ -1,0 +1,2 @@
+../Core/Src/CAN.c:12:6:can_send	24	static
+../Core/Src/CAN.c:28:6:can_real_send	24	static

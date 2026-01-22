@@ -1,0 +1,22 @@
+VERSION ""
+
+BS_:
+
+BU_:
+
+BO_ 123 message_1: 8 Pressure_Sensor
+SG_ Pressure_Sensor_idle : 0|1@1- (1,0) [0|1] " " Pressure_Sensor
+SG_ Pressure_Sensor_psi_up : 3|1@1- (1,0) [0|1] " " Pressure_Sensor
+SG_ Pressure_Sensor_temp_up : 4|1@1- (1,0) [0|1] " " Pressure_Sensor
+SG_ Pressure_Sensor_supply_fail : 7|1@1- (1,0) [0|1] " " Pressure_Sensor
+SG_ Pressure_Sensor_sensor_fail : 8|1@1- (1,0) [0|1] " " Pressure_Sensor
+SG_ Pressure_Sensor_sat : 10|1@1- (1,0) [0|1] " " Pressure_Sensor
+SG_ Pressure_Sensor_crc_error : 11|1@1- (1,0) [0|1] " " Pressure_Sensor
+SG_ Pressure_Sensor_psi_missed : 14|1@1- (1,0) [0|1] " " Pressure_Sensor
+SG_ Pressure_Sensor_temp_missed : 15|1@1- (1,0) [0|1] " " Pressure_Sensor
+
+BO_ 666 bms_message_1: 8 LVBMS
+SG_ LVBMS_Cell_0 : 0|16@1+ (0.001,0) [0|6.5535] "V" LVBMS
+SG_ LVBMS_Cell_1 : 16|16@1+ (0.001,0) [0|6.5535] "V" LVBMS
+SG_ LVBMS_Cell_2 : 32|16@1+ (0.001,0) [0|6.5535] "V" LVBMS
+SG_ LVBMS_Cell_3 : 48|16@1+ (0.001,0) [0|6.5535] "V" LVBMS
