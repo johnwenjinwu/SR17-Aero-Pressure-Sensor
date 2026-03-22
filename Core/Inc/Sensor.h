@@ -6,8 +6,7 @@
 extern I2C_HandleTypeDef hi2c1;
 
 typedef struct sensor_info_t{
-	int8_t sensor_pressure[4][8];
-	uint8_t sensor_temp[4][8];
+	float sensor_pressure[4][8];
 	uint16_t sensor_status[4][8];
 }sensor_info_t;
 

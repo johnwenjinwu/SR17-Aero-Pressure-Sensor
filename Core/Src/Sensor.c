@@ -3,33 +3,39 @@
 
 const uint8_t channel_1 = 1, channel_2 = 2, channel_3 = 4, channel_4 = 8,
 		channel_5 = 16, channel_6 = 32, channel_7 = 64, channel_8 = 128;
-const uint16_t cmd_reg = (0x22 << 8),
-		temp_reg = (0x2E << 8),
-		pressure_reg = (0x36 << 8),
-		status_reg_syn = (0x32 << 8),
-		status_reg = (0x36 << 8);
-#define sensor_addr (0x6C << 1)
+const uint16_t cmd_reg = 0x22,
+		temp_reg = 0x2E,
+		pressure_reg = 0x30,
+		status_reg_syn = 0x32,
+		status_reg = 0x36;
+#define sensor_addr (0x6C<<1)
 const uint16_t reset_write = 0xB169;
 const uint16_t reset = 0xFFFF;
 
 void sensor_get_psi(sensor_info_t *i, uint8_t maddr, uint8_t buffer_sel){
 	uint8_t buffer;
-	int16_t sensor_buffer;
+	int8_t sensor_buffer_array[2];
 	//MUX Channel select
-	HAL_I2C_Master_Transmit(&hi2c1, maddr, &channel_1, sizeof(uint8_t), 100);
+	HAL_I2C_Master_Transmit(&hi2c1, maddr, &channel_1, sizeof(uint8_t), HAL_MAX_DELAY);
 	HAL_I2C_Master_Receive(&hi2c1, maddr, &buffer, sizeof(uint8_t), 100);
 
 	//Reset sensor
 //	HAL_I2C_Mem_Write(&hi2c1, sensor_addr, cmd_reg, I2C_MEMADD_SIZE_16BIT, &reset_write, 1, 100);
 	//Get Status from sensor
-	HAL_I2C_Mem_Write(&hi2c1, sensor_addr, status_reg, I2C_MEMADD_SIZE_16BIT, &reset, 2, 100);
-	HAL_I2C_Mem_Read(&hi2c1, sensor_addr, status_reg_syn, I2C_MEMADD_SIZE_16BIT, &i->sensor_status[buffer_sel][0], 2, 100);
+//	HAL_I2C_Mem_Write(&hi2c1, sensor_addr, status_reg, I2C_MEMADD_SIZE_16BIT, &reset, 2, 100);
+	HAL_I2C_Mem_Read(&hi2c1, sensor_addr, status_reg, I2C_MEMADD_SIZE_16BIT, &i->sensor_status[buffer_sel][0], 2, HAL_MAX_DELAY);
 	//Get temp from sensor
-	HAL_I2C_Mem_Read(&hi2c1, sensor_addr, temp_reg, I2C_MEMADD_SIZE_16BIT, &sensor_buffer, 2, 100);
-	i->sensor_temp[buffer_sel][0] = sensor_buffer;
-	HAL_I2C_Mem_Read(&hi2c1, sensor_addr, pressure_reg, I2C_MEMADD_SIZE_16BIT, &sensor_buffer, 2, 100);
-	i->sensor_pressure[buffer_sel][0] = 1000 * (0.58 * (sensor_buffer + 26214) / 52428) - 0.29;
-
+//	HAL_I2C_Mem_Read(&hi2c1, sensor_addr, temp_reg, I2C_MEMADD_SIZE_16BIT, &sensor_buffer, 2, 100);
+//	i->sensor_temp[buffer_sel][0] = sensor_buffer;
+	HAL_I2C_Mem_Read(&hi2c1, sensor_addr, pressure_reg, I2C_MEMADD_SIZE_16BIT, sensor_buffer_array, 2, HAL_MAX_DELAY);
+	HAL_I2C_Mem_Read(&hi2c1, sensor_addr, status_reg, I2C_MEMADD_SIZE_16BIT, &i->sensor_status[buffer_sel][0], 2, HAL_MAX_DELAY);
+	//i->sensor_pressure[buffer_sel][0] = 1000 * (0.58 * (float)(sensor_buffer + 26215) / 52429) - 0.29;
+	int16_t sensor_buffer = (sensor_buffer_array[1] << 8) | sensor_buffer_array[0];
+	i->sensor_pressure[buffer_sel][0] = sensor_buffer + 26215;
+	i->sensor_pressure[buffer_sel][0] = i->sensor_pressure[buffer_sel][0] * (0.58);
+	i->sensor_pressure[buffer_sel][0] = i->sensor_pressure[buffer_sel][0] / (52429);
+	i->sensor_pressure[buffer_sel][0] = i->sensor_pressure[buffer_sel][0] - 0.29;
+	i->sensor_pressure[buffer_sel][0] *= 1000;
 	//MUX Channel select
 //	HAL_I2C_Master_Transmit(&hi2c1, maddr, &channel_2, sizeof(uint8_t), 100);
 //	HAL_I2C_Master_Receive(&hi2c1, maddr, &buffer, sizeof(uint8_t), 100);

@@ -131,6 +131,7 @@ int main(void)
   while (1)
   {
 	  sensor_get_psi(&sensor_info, mux_addr.A, 0);
+	  sensor_get_psi(&sensor_info, mux_addr.B, 1);
 	  can_send(&sensor_info, &can_id_lookup, &can_message);
 	  HAL_Delay(100);
     /* USER CODE END WHILE */
